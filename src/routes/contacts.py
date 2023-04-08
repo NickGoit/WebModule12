@@ -64,7 +64,7 @@ async def update_contact(body: ContactModel, contact_id: int, db: Session = Depe
 
 
 @router.delete("/{contact_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_tag(contact_id: int, db: Session = Depends(get_db),
+async def remove_contact(contact_id: int, db: Session = Depends(get_db),
                      current_user: User = Depends(auth_service.get_current_user)):
     contact = await repository_contacts.remove_contact(contact_id, db, current_user)
     if contact_id is None:
