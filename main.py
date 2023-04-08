@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from src.routes import contacts
+from src.routes import contacts, auth
 from sqlalchemy.orm import Session
 from src.database.db import get_db
 from sqlalchemy import text
@@ -8,6 +8,7 @@ from fastapi import FastAPI, Depends, HTTPException
 
 app = FastAPI()
 
+app.include_router(auth.router, prefix='/api')
 app.include_router(contacts.router, prefix='/api')
 
 
