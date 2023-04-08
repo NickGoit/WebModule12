@@ -4,7 +4,7 @@ from sqlalchemy import or_, and_
 
 from sqlalchemy.orm import Session
 
-from src.database.models import Contact
+from src.database.models import Contact, User
 from src.schemas import ContactModel
 
 
@@ -66,16 +66,16 @@ async def get_contact_birthday(skip: int,
     return contacts_with_next_birth
 
 
-async def create_contact(body: ContactModel, db: Session):
-    contact = Contact(**body.dict())
+async def create_contact(body: ContactModel, db: Session, user: User):
+    contact = Contact(**body.dict(), user_id=user.id)
     db.add(contact)
     db.commit()
     db.refresh(contact)
     return contact
 
 
-async def update_contact(contact_id: int, body: ContactModel, db: Session):
-    contact = db.query(Contact).filter(Contact.id == contact_id).first()
+async def update_contact(contact_id: int, body: ContactModel, db: Session, user: User):
+    contact = db.query(Contact).filter(and_(Contact.id == contact_id, Contact.user_id == user.id)).first()
     if contact:
         contact.first_name = body.first_name
         contact.last_name = body.last_name
@@ -86,8 +86,8 @@ async def update_contact(contact_id: int, body: ContactModel, db: Session):
     return contact
 
 
-async def remove_contact(contact_id: int, db: Session):
-    contact = db.query(Contact).filter(Contact.id == contact_id).first()
+async def remove_contact(contact_id: int, db: Session, user: User):
+    contact = db.query(Contact).filter(and_(Contact.id == contact_id, Contact.user_id == user.id)).first()
     if contact:
         db.delete(contact)
         db.commit()
